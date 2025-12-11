@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #4FC3F7 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #2196F3;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .timer {
+            font-size: 2em;
+            color: #FF5722;
+            font-weight: bold;
+            margin: 15px 0;
+            min-height: 50px;
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+            color: #F44336;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .progress {
+            font-size: 1.2em;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .progress span {
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .question-container {
+            background: #f7f7f7;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .question {
+            font-size: 3em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .answer-input {
+            font-size: 2em;
+            padding: 15px 25px;
+            border: 3px solid #2196F3;
+            border-radius: 10px;
+            text-align: center;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #00BCD4;
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .answer-input.correct {
+            border-color: #4CAF50;
+            animation: correctAnim 0.5s ease;
+        }
+
+        .answer-input.incorrect {
+            border-color: #F44336;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctAnim {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .submit-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #1976D2;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .start-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .start-btn:hover {
+            background: #45a049;
+        }
+
+        .message {
+            font-size: 1.3em;
+            margin: 15px 0;
+            min-height: 35px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            color: #4CAF50;
+        }
+
+        .message.error {
+            color: #F44336;
+        }
+
+        .message.info {
+            color: #2196F3;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f7f7f7;
+            border-radius: 10px;
+        }
+
+        .score {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .score span {
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .start-screen {
+            padding: 40px 0;
+        }
+
+        .instructions {
+            font-size: 1.1em;
+            color: #555;
+            line-height: 1.8;
+            margin: 20px 0;
+            text-align: left;
+            background: #f7f7f7;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .question {
+                font-size: 2em;
+            }
+
+            .answer-input {
+                font-size: 1.5em;
+                width: 150px;
+            }
+
+            .timer {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Multiplication Practice</h1>
+
+        <div id="startScreen" class="start-screen">
+            <div class="instructions">
+                <ul>
+                    <li>Answer 10 multiplication questions</li>
+                    <li>Complete all questions within 60 seconds</li>
+                    <li>If any answer is wrong, you'll restart with new questions</li>
+                    <li>Numbers range from 1 to 12</li>
+                </ul>
+            </div>
+            <button class="start-btn" id="startBtn">Start Game</button>
+        </div>
+
+        <div id="gameScreen" class="hidden">
+            <div class="timer" id="timer">Time: 60s</div>
+
+            <div class="progress">
+                Question <span id="current">1</span> of <span>10</span>
+            </div>
+
+            <div class="score-board">
+                <div class="score">Rounds Completed: <span id="scoreRounds">0</span></div>
+            </div>
+
+            <div class="question-container">
+                <div class="question" id="question">5 × 7 = ?</div>
+                <input type="number" class="answer-input" id="answerInput" placeholder="?" autofocus>
+                <button class="submit-btn" id="submitBtn">Submit</button>
+            </div>
+
+            <div class="message" id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const startBtn = document.getElementById('startBtn');
+        const questionElement = document.getElementById('question');
+        const answerInput = document.getElementById('answerInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const timerElement = document.getElementById('timer');
+        const currentElement = document.getElementById('current');
+        const messageElement = document.getElementById('message');
+        const scoreRoundsElement = document.getElementById('scoreRounds');
+
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let timeLeft = 60;
+        let timerInterval = null;
+        let roundsCompleted = 0;
+
+        function generateQuestions() {
+            questions = [];
+            for (let i = 0; i < 10; i++) {
+                const num1 = Math.floor(Math.random() * 12) + 1;
+                const num2 = Math.floor(Math.random() * 12) + 1;
+                questions.push({
+                    num1: num1,
+                    num2: num2,
+                    answer: num1 * num2
+                });
+            }
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionElement.textContent = `${question.num1} × ${question.num2} = ?`;
+            currentElement.textContent = currentQuestionIndex + 1;
+            answerInput.value = '';
+            answerInput.classList.remove('correct', 'incorrect');
+            answerInput.focus();
+            messageElement.textContent = '';
+            messageElement.className = 'message';
+        }
+
+        function startTimer() {
+            timeLeft = 60;
+            updateTimerDisplay();
+
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 10) {
+                    timerElement.classList.add('warning');
+                } else {
+                    timerElement.classList.remove('warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            timerElement.textContent = `Time: ${timeLeft}s`;
+        }
+
+        function handleTimeUp() {
+            messageElement.textContent = 'Time is up! Starting new round...';
+            messageElement.className = 'message error';
+            answerInput.disabled = true;
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                restartGame();
+            }, 2000);
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(answerInput.value);
+            const correctAnswer = questions[currentQuestionIndex].answer;
+
+            if (isNaN(userAnswer)) {
+                messageElement.textContent = 'Please enter a number!';
+                messageElement.className = 'message error';
+                return;
+            }
+
+            if (userAnswer === correctAnswer) {
+                answerInput.classList.add('correct');
+                messageElement.textContent = 'Correct!';
+                messageElement.className = 'message success';
+
+                currentQuestionIndex++;
+
+                if (currentQuestionIndex >= 10) {
+                    handleRoundComplete();
+                } else {
+                    setTimeout(() => {
+                        displayQuestion();
+                    }, 800);
+                }
+            } else {
+                answerInput.classList.add('incorrect');
+                messageElement.textContent = `Wrong! The correct answer was ${correctAnswer}. Starting new round...`;
+                messageElement.className = 'message error';
+                answerInput.disabled = true;
+                submitBtn.disabled = true;
+
+                setTimeout(() => {
+                    restartGame();
+                }, 2500);
+            }
+        }
+
+        function handleRoundComplete() {
+            clearInterval(timerInterval);
+            roundsCompleted++;
+            scoreRoundsElement.textContent = roundsCompleted;
+
+            messageElement.textContent = `Congratulations! Round completed in ${60 - timeLeft} seconds!`;
+            messageElement.className = 'message success';
+            answerInput.disabled = true;
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                restartGame();
+            }, 3000);
+        }
+
+        function restartGame() {
+            currentQuestionIndex = 0;
+            generateQuestions();
+            answerInput.disabled = false;
+            submitBtn.disabled = false;
+            displayQuestion();
+            startTimer();
+        }
+
+        function startGame() {
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            generateQuestions();
+            displayQuestion();
+            startTimer();
+        }
+
+        startBtn.addEventListener('click', startGame);
+
+        submitBtn.addEventListener('click', checkAnswer);
+
+        answerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
